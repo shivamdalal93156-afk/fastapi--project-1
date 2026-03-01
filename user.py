@@ -1,4 +1,4 @@
-
+import hashed
 from multiprocessing import synchronize
 
 from fastapi import APIRouter , status , Depends , HTTPException
@@ -21,7 +21,7 @@ def user_post(user : Usercreate, db : session = Depends(get_db)):
     existing = db.query(User).filter(user.email == User.email).first()
     if existing:
         raise HTTPException(status_code=400 , detail=f"user on {user.email} already exist")
-    new_entry = User(name = user.name , email = user.email , age = user.age ,password = user.password)
+    new_entry = User(name = user.name , email = user.email , age = user.age ,password = hashed.hashed.bcrypt(user.password))
     db.add(new_entry)
     db.commit()
     db.refresh(new_entry)
